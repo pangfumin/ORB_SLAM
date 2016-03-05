@@ -9,6 +9,7 @@
    </node>
 
  	<node pkg="ORB_SLAM" type="ORB_SLAM" name="ORB_SLAM"  args="Data/ORBvoc.txt Data/Settings.yaml" cwd="node" output="screen">
+ 	
    </node>
 
 </launch>

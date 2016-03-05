@@ -43,9 +43,9 @@ namespace ORB_SLAM
 {
 
 
-Tracking::Tracking(ORBVocabulary* pVoc, FramePublisher *pFramePublisher, MapPublisher *pMapPublisher, Map *pMap, string strSettingPath):
+Tracking::Tracking(ORBVocabulary* pVoc, FramePublisher *pFramePublisher, MapPublisher *pMapPublisher, Map *pMap, string strSettingPath,bool bUsingDataset):
     mState(NO_IMAGES_YET), mpORBVocabulary(pVoc), mpFramePublisher(pFramePublisher), mpMapPublisher(pMapPublisher), mpMap(pMap),
-    mnLastRelocFrameId(0), mbPublisherStopped(false), mbReseting(false), mbForceRelocalisation(false), mbMotionModel(false)
+    mnLastRelocFrameId(0), mbPublisherStopped(false), mbReseting(false), mbForceRelocalisation(false), mbMotionModel(false),mbUsingDataset(bUsingDataset)
 {
     // Load camera parameters from settings file
 
@@ -136,10 +136,11 @@ Tracking::Tracking(ORBVocabulary* pVoc, FramePublisher *pFramePublisher, MapPubl
     else
         cout << endl << "Motion Model: Disabled (not recommended, change settings UseMotionModel: 1)" << endl << endl;
 
-
+    /*
     tf::Transform tfT;
     tfT.setIdentity();
     mTfBr.sendTransform(tf::StampedTransform(tfT,ros::Time::now(), "/ORB_SLAM/World", "/ORB_SLAM/Camera"));
+    */
 }
 
 void Tracking::SetLocalMapper(LocalMapping *pLocalMapper)
@@ -195,11 +196,11 @@ void Tracking::GrabImage(const sensor_msgs::ImageConstPtr& msg)
     {
         cv_ptr->image.copyTo(im);
     }
-
+    ros::Time  image_t = cv_ptr->header.stamp;
     if(mState==WORKING || mState==LOST)
-        mCurrentFrame = Frame(im,cv_ptr->header.stamp.toSec(),mpORBextractor,mpORBVocabulary,mK,mDistCoef);
+        mCurrentFrame = Frame(im,image_t.toSec(),mpORBextractor,mpORBVocabulary,mK,mDistCoef);
     else
-        mCurrentFrame = Frame(im,cv_ptr->header.stamp.toSec(),mpIniORBextractor,mpORBVocabulary,mK,mDistCoef);
+        mCurrentFrame = Frame(im,image_t.toSec(),mpIniORBextractor,mpORBVocabulary,mK,mDistCoef);
 
     // Depending on the state of the Tracker we perform different tasks
 
@@ -310,8 +311,12 @@ void Tracking::GrabImage(const sensor_msgs::ImageConstPtr& msg)
         tf::Vector3 V(twc.at<float>(0), twc.at<float>(1), twc.at<float>(2));
 
         tf::Transform tfTcw(M,V);
-
-        mTfBr.sendTransform(tf::StampedTransform(tfTcw,ros::Time::now(), "ORB_SLAM/World", "ORB_SLAM/Camera"));
+        // timestamp is according to current time
+        if(mbUsingDataset)
+        {
+            mTfBr.sendTransform(tf::StampedTransform(tfTcw,image_t, "ORB_SLAM/World", "ORB_SLAM/Camera"));
+        }else
+            mTfBr.sendTransform(tf::StampedTransform(tfTcw,ros::Time::now(), "ORB_SLAM/World", "ORB_SLAM/Camera"));
     }
 
 }

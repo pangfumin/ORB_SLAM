@@ -8,7 +8,7 @@
 	<node pkg="rviz" type="rviz" name="rviz" args="-d $(find ORB_SLAM)/Data/rviz.rviz" output="log">
    </node>
 
- 	<node pkg="ORB_SLAM" type="ORB_SLAM" name="ORB_SLAM"  args="Data/ORBvoc.txt Data/eth_MH_settings.yaml" cwd="node" output="screen">
+    <node pkg="ORB_SLAM" type="ORB_SLAM" name="ORB_SLAM"  args="Data/ORBvoc.txt Data/eth_MH_settings.yaml 1" cwd="node" output="screen">
  	  <remap from="/camera/image_raw" to="/cam0/image_raw" />
  	
    </node>

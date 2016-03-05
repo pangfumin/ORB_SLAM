@@ -52,7 +52,7 @@ class Tracking
 {  
 
 public:
-    Tracking(ORBVocabulary* pVoc, FramePublisher* pFramePublisher, MapPublisher* pMapPublisher, Map* pMap, string strSettingPath);
+    Tracking(ORBVocabulary* pVoc, FramePublisher* pFramePublisher, MapPublisher* pMapPublisher, Map* pMap, string strSettingPath,bool bUsingDataset);
 
     enum eTrackingState{
         SYSTEM_NOT_READY=-1,
@@ -177,6 +177,9 @@ protected:
 
     //Color order (true RGB, false BGR, ignored if grayscale)
     bool mbRGB;
+
+    // wether using dataset
+    bool mbUsingDataset;
 
     // Transfor broadcaster (for visualization in rviz)
     tf::TransformBroadcaster mTfBr;

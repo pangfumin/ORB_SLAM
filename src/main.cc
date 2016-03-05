@@ -52,12 +52,22 @@ int main(int argc, char **argv)
             "This is free software, and you are welcome to redistribute it" << endl <<
             "under certain conditions. See LICENSE.txt." << endl;
 
-    if(argc != 3)
+    if(argc < 3)
     {
-        cerr << endl << "Usage: rosrun ORB_SLAM ORB_SLAM path_to_vocabulary path_to_settings (absolute or relative to package directory)" << endl;
+        cerr << endl << "Usage: "<<endl;
+
+        cerr<<"rosrun ORB_SLAM ORB_SLAM path_to_vocabulary path_to_settings [using_dataset:0 or 1]" << endl;
         ros::shutdown();
-        return 1;
+     }
+    int bUsingDataset = 0;
+    if(argc == 4)
+    {
+        // check wether is using dataset
+        string strUsingDataset  = argv[3];
+        bUsingDataset = std::atoi( strUsingDataset.c_str());
+        std::cout<<"Using Dataset :"<<(bool)bUsingDataset<<endl;
     }
+
 
     // Load Settings and Check
     string strSettingsFile = ros::package::getPath("ORB_SLAM")+"/"+argv[2];
@@ -119,7 +129,7 @@ int main(int argc, char **argv)
     ORB_SLAM::MapPublisher MapPub(&World);
 
     //Initialize the Tracking Thread and launch
-    ORB_SLAM::Tracking Tracker(&Vocabulary, &FramePub, &MapPub, &World, strSettingsFile);
+    ORB_SLAM::Tracking Tracker(&Vocabulary, &FramePub, &MapPub, &World, strSettingsFile,(bool)bUsingDataset);
     boost::thread trackingThread(&ORB_SLAM::Tracking::Run,&Tracker);
 
     Tracker.SetKeyFrameDatabase(&Database);
