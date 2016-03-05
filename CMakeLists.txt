@@ -24,6 +24,13 @@ ${PROJECT_SOURCE_DIR}
 ${EIGEN3_INCLUDE_DIR}
 )
 
+
+# show include dir in qtcreator
+file(GLOB_RECURSE CURRENT_HEADERS  include/*.h include*.hpp)
+source_group("Include" FILES ${CURRENT_HEADERS}) 
+
+
+
 rosbuild_add_executable(${PROJECT_NAME}
 src/main.cc
 src/Tracking.cc
@@ -43,6 +50,7 @@ src/Frame.cc
 src/KeyFrameDatabase.cc
 src/Sim3Solver.cc
 src/Initializer.cc
+${CURRENT_HEADERS}
 )
 rosbuild_add_boost_directories()
 rosbuild_link_boost(${PROJECT_NAME} thread)
