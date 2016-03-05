@@ -32,7 +32,8 @@
 
 #include"Optimizer.h"
 #include"PnPsolver.h"
-
+#include<eigen3/Eigen/Core>
+#include<Eigen/Dense>
 #include<iostream>
 #include<fstream>
 
@@ -141,6 +142,8 @@ Tracking::Tracking(ORBVocabulary* pVoc, FramePublisher *pFramePublisher, MapPubl
     tfT.setIdentity();
     mTfBr.sendTransform(tf::StampedTransform(tfT,ros::Time::now(), "/ORB_SLAM/World", "/ORB_SLAM/Camera"));
     */
+
+
 }
 
 void Tracking::SetLocalMapper(LocalMapping *pLocalMapper)
@@ -162,7 +165,7 @@ void Tracking::Run()
 {
     ros::NodeHandle nodeHandler;
     ros::Subscriber sub = nodeHandler.subscribe("/camera/image_raw", 1, &Tracking::GrabImage, this);
-
+    mTransformPub = nodeHandler.advertise<geometry_msgs::TransformStamped>("Orb_transform", 10);
     ros::spin();
 }
 
@@ -311,12 +314,40 @@ void Tracking::GrabImage(const sensor_msgs::ImageConstPtr& msg)
         tf::Vector3 V(twc.at<float>(0), twc.at<float>(1), twc.at<float>(2));
 
         tf::Transform tfTcw(M,V);
+
+        geometry_msgs::TransformStamped geTcw;
+
+        geTcw.header.frame_id = "ORB_SLAM/World";
+        geTcw.child_frame_id = "ORB_SLAM/Camera";
+        geTcw.transform.translation.x = twc.at<float>(0);
+        geTcw.transform.translation.y = twc.at<float>(1);
+        geTcw.transform.translation.z = twc.at<float>(2);
+        Eigen::Matrix3f  m;
+        m << Rwc.at<float>(0,0),Rwc.at<float>(0,1),Rwc.at<float>(0,2),
+             Rwc.at<float>(1,0),Rwc.at<float>(1,1),Rwc.at<float>(1,2),
+             Rwc.at<float>(2,0),Rwc.at<float>(2,1),Rwc.at<float>(2,2);
+        Eigen::Quaternionf q(m);
+
+        geometry_msgs::Quaternion quat;
+        quat.x = q.x();
+        quat.y = q.y();
+        quat.z = q.z();
+        quat.w = q.w();
+
+        geTcw.transform.rotation = quat;
+
         // timestamp is according to current time
         if(mbUsingDataset)
         {
+            geTcw.header.stamp = image_t;
+            mTransformPub.publish(geTcw);
             mTfBr.sendTransform(tf::StampedTransform(tfTcw,image_t, "ORB_SLAM/World", "ORB_SLAM/Camera"));
-        }else
+
+        }else{
+            geTcw.header.stamp = ros::Time::now();
+            mTransformPub.publish(geTcw);
             mTfBr.sendTransform(tf::StampedTransform(tfTcw,ros::Time::now(), "ORB_SLAM/World", "ORB_SLAM/Camera"));
+        }
     }
 
 }
