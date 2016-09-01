@@ -38,10 +38,7 @@ Visualization Manager:
       Marker Topic: /ORB_SLAM/Map
       Name: Marker
       Namespaces:
-        Camera: true
-        Graph: true
-        KeyFrames: true
-        MapPoints: true
+        {}
       Queue Size: 100
       Value: true
     - Class: rviz/Axes
@@ -49,12 +46,30 @@ Visualization Manager:
       Length: 0.2
       Name: Axes
       Radius: 0.05
-      Reference Frame: ORB_SLAM/Camera
+      Reference Frame: state
+      Value: true
+    - Alpha: 0.5
+      Cell Size: 1
+      Class: rviz/Grid
+      Color: 160; 160; 164
+      Enabled: true
+      Line Style:
+        Line Width: 0.03
+        Value: Lines
+      Name: Grid
+      Normal Cell Count: 0
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0
+      Plane: XY
+      Plane Cell Count: 10
+      Reference Frame: <Fixed Frame>
       Value: true
   Enabled: true
   Global Options:
     Background Color: 255; 255; 255
-    Fixed Frame: ORB_SLAM/World
+    Fixed Frame: world
     Frame Rate: 30
   Name: root
   Tools:
@@ -75,7 +90,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 3.13423
+      Distance: 6.92878
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.06
         Stereo Focal Distance: 1
@@ -87,10 +102,10 @@ Visualization Manager:
         Z: 0.713479
       Name: Current View
       Near Clip Distance: 0.01
-      Pitch: -1.0148
+      Pitch: 0.675199
       Target Frame: ORB_SLAM/Camera
       Value: Orbit (rviz)
-      Yaw: 4.78858
+      Yaw: 4.20858
     Saved: ~
 Window Geometry:
   Displays:
@@ -108,5 +123,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 929
-  X: 353
+  X: 84
   Y: 14

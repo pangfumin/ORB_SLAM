@@ -62,3 +62,14 @@ ${PROJECT_SOURCE_DIR}/Thirdparty/DBoW2/lib/libDBoW2.so
 ${PROJECT_SOURCE_DIR}/Thirdparty/g2o/lib/libg2o.so
 )
 
+
+rosbuild_add_executable( extractImageFromBag
+tools/extractImageFromBag.cc
+${CURRENT_HEADERS}
+)
+
+target_link_libraries(${PROJECT_NAME}
+${OpenCV_LIBS}
+
+)
+
